@@ -35,7 +35,10 @@ while(++$c){
 	if($X-1 == $pos or $X == $pos or $X+1 == $pos) { substr($line, $pos, 1) = "#"; }
 	$pos++;
 	if($pos % 40 == 0) {
-		print "$line\n";
+		#print "$line\n";
+		# use unicode blocks:
+		for $i (split(//,$line)) { print $i ne " " ? "⬜" : "⬛"; }
+		print "\n";
 		$line = " " x 40;
 		$pos = 0;
 	}
