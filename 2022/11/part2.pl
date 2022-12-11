@@ -10,7 +10,7 @@ while(<>) {
 	m/  Starting items: (.*)\n  Operation: (.*)\n  Test: divisible by (\d+)\n.*(\d+)\n.*(\d+)/;
 
 	@items = split(/, /, $1);
-  $items{$n_monkeys} = [@items];
+	$items{$n_monkeys} = [@items];
 	$operation{$n_monkeys} = $2;
 	$divisible_by{$n_monkeys} = $3;
 	$throw_true{$n_monkeys} = $4;
