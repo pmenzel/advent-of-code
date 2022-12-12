@@ -7,8 +7,8 @@
 * use Find to count number of `1`
 
 ### Part 1
-
+![Part 2](day12p1.png)
 
 ### Part 2
-
+![Part 2](day12p2.png)
 
