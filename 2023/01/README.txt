@@ -1,3 +1,6 @@
+Part 1:
+
+perl -ne 'if(/(\d).*(\d)/){$s += $1.$2} elsif(/(\d)/){$s+=$1.$1} }{ print $s' input.txt
 
 Part 2:
 
