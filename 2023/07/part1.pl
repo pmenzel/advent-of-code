@@ -39,19 +39,8 @@ sub get_type_rank {
 	if($t eq "high card") { return 1; }
 }
 
-while(<>) {
-  chomp;
-  @F = split;
-  $s = $F[0];
-  $h{$s} = $F[1];
-  $A[$.-1] = $s;
-	#$t = get_type($s);
-	#$r = get_type_rank($t);
-	#print "$s = $t which has rank $r\n";
-}
-
 sub compare_hands {
-	#determine type of hand for $a
+	#determine type of hand for $a and $b
 	$type_rank_a = get_type_rank(get_type($a));
 	$type_rank_b = get_type_rank(get_type($b));
 	#print "comparing $a $b:";
@@ -59,6 +48,7 @@ sub compare_hands {
 		#print " same rank\n";
 		# replace  A, K, Q, J, T by ascii chars for easier sorting the string
 		# need to make new variables as the original strings in @A would be changed
+		# when modifying $a and $b directly!
 		$a2 = $a;
 		$b2 = $b;
 		$a2 =~ y/AKQJT/edcba/;
@@ -71,8 +61,25 @@ sub compare_hands {
 	}
 }
 
+# ------------- main ------------------------------------------------------------------
+
+# read input lines and add each hand to an array @A, which is to be sorted later,
+# and a hash %h that maps hands to their bid value
+while(<>) {
+  chomp;
+  @F = split;
+  $s = $F[0];
+  $h{$s} = $F[1];
+  $A[$.-1] = $s;
+	#$t = get_type($s);
+	#$r = get_type_rank($t);
+	#print "$s = $t which has rank $r\n";
+}
+
 my @Asort = sort compare_hands @A;
+
 foreach(@Asort) { $i++; print "$_ has rank $i with bid $h{$_}\n"; $S += $i * $h{$_} }
+
 print "final sum = $S\n";
 
 
