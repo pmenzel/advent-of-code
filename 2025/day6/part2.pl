@@ -1,4 +1,7 @@
 #!/usr/bin/env perl -w
+
+# NB: input file needs padding whitespace in the last columns
+
 use strict;
 use warnings;
 
