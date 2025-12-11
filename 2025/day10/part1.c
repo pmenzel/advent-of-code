@@ -52,11 +52,12 @@ int main(int argc, char **argv) {
 				//fprintf(stderr, "Evaluating %i against %i\n", q_head->lights, target_lights);
 				if(q_head->lights == target_lights) {
 					final_depth = q_head->depth;
+					//TODO: cleanup remaining queue
 					break;
 				}
 				// process State in queue head
 				for(int i = 0; i < n_btns; i++) {
-					// add q_head lights & btn to queue
+					// add q_head lights xor btn to queue
 					//fprintf(stderr,"%i ^ %i\n", q_head->lights, btns[i]);
 					queue_push(&q_back, q_head->lights ^ btns[i], q_head->depth + 1);
 				}
