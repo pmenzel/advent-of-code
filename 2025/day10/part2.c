@@ -16,24 +16,35 @@ struct State
 };
 
 
-void queue_push(struct State **q_back, uint32_t n_joltages,	uint32_t *prev_joltages, uint32_t btn, uint32_t depth) {
+void queue_push(struct State **q_back, uint32_t n_joltages,	uint32_t *prev_joltages, uint32_t *target_joltages, uint32_t btn, uint32_t depth) {
 	if(q_back == NULL) {
 		fprintf(stderr, "Queue back is NULL\n");
 		exit(1);
 	}
+	uint32_t *new_joltages = (uint32_t *)malloc(sizeof(uint32_t) * n_joltages);
+	for(uint32_t i = 0; i < n_joltages; i++) {
+		new_joltages[i] = prev_joltages[i];
+		// add btn to joltages if it affects joltage i
+		if(((1u << i) & btn) != 0) {
+			// test if the joltage already exceeds the target joltage, then do not add to queue.
+			if(new_joltages[i] + 1 > target_joltages[i]) {
+				//fprintf(stderr, "Skipping btn %i\n", btn);
+				free(new_joltages);
+				return;
+			}
+			new_joltages[i] += 1;
+		}
+	}
 	struct State *new_el = (struct State *)malloc(sizeof(struct State));
 	new_el->next = NULL;
-	new_el->joltages = (uint32_t *)malloc(sizeof(uint32_t) * n_joltages);
-	for(uint32_t i = 0; i < n_joltages; i++) {
-		new_el->joltages[i] = prev_joltages[i];
-		// add btn to joltages
-		if(((1u << i) & btn) != 0) { new_el->joltages[i] += 1; }
-	}
+	new_el->joltages = new_joltages;
+	/*
 	fprintf(stderr, "Added btn %i to ", btn);
 	for(uint32_t i = 0; i < n_joltages; i++) { fprintf(stderr, "%i,", prev_joltages[i]); }
 	fprintf(stderr, " resulting in ");
 	for(uint32_t i = 0; i < n_joltages; i++) { fprintf(stderr, "%i,", new_el->joltages[i]); }
 	fprintf(stderr, " with depth %i\n", depth);
+	*/
 	new_el->depth = depth;
 	(*q_back)->next = new_el;
 	*q_back = new_el;
@@ -61,13 +72,15 @@ int main(int argc, char **argv) {
 			q_head->next = NULL;
 			uint32_t final_depth = 0;
 			while(1) {
+				/*
 				fprintf(stderr, "Evaluating ");
 				for(uint32_t i = 0; i < n_joltages; i++) { fprintf(stderr, "%i,", q_head->joltages[i]); }
 				fprintf(stderr, " against target ");
 				for(uint32_t i = 0; i < n_joltages; i++) { fprintf(stderr, "%i,", target_joltages[i]); }
 				fprintf(stderr, "\n");
+				*/
 				if(memcmp(q_head->joltages, target_joltages, n_joltages * sizeof(uint32_t)) == 0) {
-					printf("found!!!!\n");
+					//printf("found!!!!\n");
 					final_depth = q_head->depth;
 					// cleanup remaining queue
 					while(q_head->next != NULL) {
@@ -76,13 +89,13 @@ int main(int argc, char **argv) {
 						free(tmp->joltages);
 						free(tmp);
 					}
+					free(q_head->joltages);
+					free(q_head);
 					break;
 				}
 				// process State in queue head
 				for(int i = 0; i < n_btns; i++) {
-					// add q_head lights xor btn to queue
-					//fprintf(stderr,"%i ^ %i\n", q_head->lights, btns[i]);
-					queue_push(&q_back, n_joltages, q_head->joltages, btns[i], q_head->depth + 1);
+					queue_push(&q_back, n_joltages, q_head->joltages, target_joltages, btns[i], q_head->depth + 1);
 				}
 				// remove queue head
 				struct State *next = q_head->next;
